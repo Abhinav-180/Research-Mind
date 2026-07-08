@@ -7,15 +7,22 @@ from dotenv import load_dotenv
 import os
 
 load_dotenv()
+#KIYOZAT ACC SE MISTRAL PE LOGIN H
+# Check if Mistral API key is provided
+mistral_key = os.getenv("MISTRAL_API_KEY")
 
-# model setup - Hardcoded to OpenRouter to ensure free model usage
-api_key = os.getenv("OPENROUTER_API_KEY")
-api_base = "https://openrouter.ai/api/v1"
-model_name = os.getenv("LLM_MODEL", "meta-llama/llama-3.3-70b-instruct:free")
-
-if not api_key:
-    import sys
-    print("WARNING: OPENROUTER_API_KEY is not set in environment variables.", file=sys.stderr)
+if mistral_key:
+    api_key = mistral_key
+    api_base = "https://api.mistral.ai/v1"
+    model_name = os.getenv("LLM_MODEL", "mistral-small-latest")
+else:
+    api_key = os.getenv("OPENROUTER_API_KEY")
+    api_base = "https://openrouter.ai/api/v1"
+    model_name = os.getenv("LLM_MODEL", "meta-llama/llama-3.3-70b-instruct:free")
+    
+    if not api_key:
+        import sys
+        print("WARNING: Neither MISTRAL_API_KEY nor OPENROUTER_API_KEY is set in environment variables.", file=sys.stderr)
 
 llm = ChatOpenAI(
     model=model_name,

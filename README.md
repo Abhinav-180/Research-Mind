@@ -1,153 +1,178 @@
-# ResearchMind - Multi-Agent Research System
+# 🔬 ResearchMind
 
-ResearchMind is a Streamlit-based AI research assistant that uses a multi-agent workflow to search the web, read useful sources, write a structured research report, and review the final output.
+**Streamlit App**
 
-The app is built with LangChain, Tavily Search, BeautifulSoup, and OpenAI-compatible LLM APIs such as Mistral AI or OpenRouter.
+An intelligent multi-agent research assistant that searches the web, reads source pages, writes structured reports, and critiques the final output — powered by LangChain, Tavily, and Mistral AI / OpenRouter.
 
-## Features
+🌐 **[Live Demo → research-mind-4vcvgdnejo6x6mrqnjcfuf.streamlit.app](https://research-mind-4vcvgdnejo6x6mrqnjcfuf.streamlit.app)**
 
-- Web-based Streamlit interface
-- Multi-agent research pipeline
-- Recent web search using Tavily
-- URL scraping for deeper source reading
-- AI-generated structured research reports
-- Critic chain that scores and reviews the report
-- Optional command-line pipeline through `pipeline.py`
-- Supports Mistral AI and OpenRouter models
+---
 
-## Tech Stack
+## ✨ Features
 
-- Python
-- Streamlit
-- LangChain
-- LangChain OpenAI
-- Tavily Search API
-- BeautifulSoup
-- Requests
-- python-dotenv
+| Feature | Description |
+|---|---|
+| 🔍 Web Search Agent | Finds recent and relevant information using Tavily Search API |
+| 📄 Reader Agent | Selects the most useful source and scrapes deeper page content via BeautifulSoup |
+| ✍️ Research Writer | Generates a structured report with introduction, key findings, conclusion, and sources |
+| 🧐 Critic Chain | Reviews the generated report and gives a quality score with improvement suggestions |
+| 🎨 Streamlit UI | Beautiful dark-mode web interface with step-by-step pipeline visualization |
+| 💻 CLI Pipeline | Run the same workflow from the terminal using `pipeline.py` |
+| 🔄 Flexible LLM Backend | Supports Mistral AI (primary) with OpenRouter as automatic fallback |
+| ⬇️ Report Download | Download the final research report as a Markdown file |
 
-## Project Structure
+---
+
+## 🏗️ Architecture
 
 ```text
-.
-├── app.py              # Streamlit web app
-├── agents.py           # LLM, agents, writer chain, critic chain
-├── tools.py            # Tavily search and URL scraping tools
-├── pipeline.py         # CLI version of the research pipeline
+Research Topic
+      │
+      ▼
+┌─────────────────────┐
+│  🔍 Search Agent     │  Tavily Search API → Titles, URLs, Snippets
+└──────────┬──────────┘
+           ▼
+┌─────────────────────┐
+│  📄 Reader Agent     │  Requests + BeautifulSoup → Deep Page Content
+└──────────┬──────────┘
+           ▼
+┌─────────────────────┐
+│  ✍️ Writer Chain      │  LangChain LCEL + Mistral/OpenRouter
+│  └─ Report Builder   │  Introduction → Key Findings → Conclusion → Sources
+└──────────┬──────────┘
+           ▼
+┌─────────────────────┐
+│  🧐 Critic Chain     │  Quality Score (X/10) + Strengths + Areas to Improve
+└─────────────────────┘
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend | Streamlit |
+| LLM Orchestration | LangChain (LCEL pipe `\|` operator) |
+| LLM Providers | Mistral AI (`mistral-small-latest`) · OpenRouter (Llama 3.3 70B free) |
+| Web Search | Tavily Search API |
+| Web Scraping | Requests + BeautifulSoup4 |
+| Language | Python 3.10+ |
+| Config | python-dotenv |
+
+---
+
+## 📂 Project Structure
+
+```text
+ResearchMind/
+│
+├── app.py              # Streamlit UI (main entry point)
+├── pipeline.py         # CLI entry point (terminal usage)
+│
+├── agents.py           # LLM setup, Search & Reader agents, Writer & Critic chains
+├── tools.py            # Tavily web search & URL scraping tools
+│
 ├── requirements.txt    # Python dependencies
 ├── .env.example        # Environment variable template
-└── .gitignore
+├── .gitignore
+└── README.md
 ```
 
-## How It Works
+---
 
-1. Search Agent finds recent and reliable web information using Tavily.
-2. Reader Agent selects a useful URL and scrapes deeper content from it.
-3. Writer Chain creates a structured research report from the gathered data.
-4. Critic Chain reviews the report and gives feedback with a score.
+## ⚡ Quick Start
 
-## Setup Locally
-
-### 1. Clone the repository
+### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/Abhinav-180/Research-Mind.git
+cd Research-Mind
 ```
 
-### 2. Create a virtual environment
+### 2. Create and Activate a Virtual Environment
 
 ```bash
 python -m venv .venv
 ```
 
-Activate it:
-
 ```bash
 # Windows
 .venv\Scripts\activate
 
-# macOS/Linux
+# macOS / Linux
 source .venv/bin/activate
 ```
 
-### 3. Install dependencies
+### 3. Install Dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Add environment variables
+### 4. Set Up API Keys
 
-Copy the example file:
-
-```bash
-copy .env.example .env
-```
-
-On macOS/Linux:
-
-```bash
-cp .env.example .env
-```
-
-Then add your API keys inside `.env`:
+Create a `.env` file in the project root (or copy from `.env.example`):
 
 ```env
-TAVILY_API_KEY=your_tavily_api_key
+# Required — Tavily Search (1,000 free queries/month)
+TAVILY_API_KEY=your_tavily_api_key_here
 
-# Use either Mistral:
-MISTRAL_API_KEY=your_mistral_api_key
+# Option A: Mistral AI (preferred)
+MISTRAL_API_KEY=your_mistral_api_key_here
 LLM_MODEL=mistral-small-latest
 
-# Or OpenRouter:
-OPENROUTER_API_KEY=your_openrouter_api_key
-LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free
+# Option B: OpenRouter (free, automatic fallback)
+# OPENROUTER_API_KEY=your_openrouter_api_key_here
+# LLM_MODEL=meta-llama/llama-3.3-70b-instruct:free
 ```
 
-If `MISTRAL_API_KEY` is present, the app uses Mistral first. If it is not present, it falls back to OpenRouter.
+Get your free API keys from:
 
-Do not upload your `.env` file to GitHub.
+- **Tavily:** [tavily.com](https://tavily.com)
+- **Mistral AI:** [console.mistral.ai](https://console.mistral.ai)
+- **OpenRouter:** [openrouter.ai](https://openrouter.ai) *(no credit card required)*
 
-## Run the App
+> If `MISTRAL_API_KEY` is set, the app uses Mistral. Otherwise, it automatically falls back to OpenRouter.
+
+### 5. Run the App
 
 ```bash
 streamlit run app.py
 ```
 
-Then open:
+The app will open at `http://localhost:8501`
 
-```text
-http://localhost:8501
-```
+---
 
-## Run the CLI Pipeline
-
-You can also run the research pipeline from the terminal:
+## 💻 Run in Terminal (CLI Mode)
 
 ```bash
 python pipeline.py
 ```
 
-Enter a topic when prompted.
+This runs the same 4-step research pipeline in CLI mode and prompts you for a topic.
 
-## Deployment
+---
 
-### Option 1: Deploy on Streamlit Community Cloud
+## 🚀 How to Use
 
-This is the easiest option for this project.
+1. Open the Streamlit app
+2. Enter a research topic (e.g. `Fusion energy progress`, `LLM agents 2025`, `CRISPR gene editing`)
+3. Click **⚡ Run Research Pipeline**
+4. Watch the 4 agents work in real-time — Search → Reader → Writer → Critic
+5. Review the final report and critic feedback
+6. Download the report as `.md` with one click
 
-1. Push this project to GitHub.
-2. Go to [Streamlit Community Cloud](https://share.streamlit.io/).
-3. Click `New app`.
-4. Select your GitHub repository.
-5. Set the main file path as:
+---
 
-```text
-app.py
-```
+## ☁️ Deployment (Streamlit Community Cloud)
 
-6. Add secrets in Streamlit Cloud:
+1. Push the repo to GitHub
+2. Go to [share.streamlit.io](https://share.streamlit.io/)
+3. Click **Create app** → Select repo `Abhinav-180/Research-Mind`, branch `main`, file `app.py`
+4. In **Advanced settings**, add your secrets:
 
 ```toml
 TAVILY_API_KEY = "your_tavily_api_key"
@@ -155,7 +180,7 @@ MISTRAL_API_KEY = "your_mistral_api_key"
 LLM_MODEL = "mistral-small-latest"
 ```
 
-Or, if using OpenRouter:
+Or for OpenRouter:
 
 ```toml
 TAVILY_API_KEY = "your_tavily_api_key"
@@ -163,67 +188,29 @@ OPENROUTER_API_KEY = "your_openrouter_api_key"
 LLM_MODEL = "meta-llama/llama-3.3-70b-instruct:free"
 ```
 
-7. Deploy the app.
+5. Click **Deploy** 🚀
 
-### Option 2: Deploy on Render
+---
 
-1. Push the project to GitHub.
-2. Create a new `Web Service` on [Render](https://render.com/).
-3. Connect your GitHub repository.
-4. Use these settings:
+## 🔑 Key Concepts
 
-```text
-Build Command: pip install -r requirements.txt
-Start Command: streamlit run app.py --server.port $PORT --server.address 0.0.0.0
-```
+| Concept | Where Used | Why |
+|---|---|---|
+| Multi-Agent Workflow | `agents.py`, `pipeline.py`, `app.py` | Splits research into specialized steps (search, read, write, critique) for higher quality output |
+| Tool Calling | `tools.py` | Lets agents autonomously search the web and scrape URLs using LangChain `@tool` |
+| Prompt Chaining (LCEL) | `agents.py` | Modern chain composition using the `\|` pipe operator for clean, readable chains |
+| Web Scraping | `tools.py` | Pulls deeper content from selected pages beyond search snippets (up to 3000 chars) |
+| LLM Fallback Strategy | `agents.py` | Tries Mistral AI first, falls back to OpenRouter for zero-cost operation |
+| Streamlit Session State | `app.py` | Tracks pipeline progress and results across re-runs for a seamless UX |
 
-5. Add environment variables in Render dashboard:
+---
 
-```text
-TAVILY_API_KEY
-MISTRAL_API_KEY or OPENROUTER_API_KEY
-LLM_MODEL
-```
+## 📝 License
 
-6. Deploy.
+This project is for educational and portfolio purposes.
 
-## GitHub Repository Description
+---
 
-Use this as the GitHub repo description:
+## 🙋 Author
 
-```text
-A Streamlit multi-agent AI research assistant that searches the web, scrapes sources, writes structured reports, and reviews them using LangChain, Tavily, and OpenAI-compatible LLMs.
-```
-
-Short version:
-
-```text
-Multi-agent AI research assistant built with Streamlit, LangChain, Tavily, and LLM APIs.
-```
-
-## Suggested GitHub Topics
-
-```text
-streamlit
-langchain
-multi-agent
-ai-agents
-research-assistant
-tavily
-mistral-ai
-openrouter
-python
-llm
-```
-
-## Important Notes
-
-- Keep `.env` private.
-- Add API keys only through environment variables or deployment secrets.
-- Tavily is required for web search.
-- Mistral or OpenRouter is required for LLM responses.
-- If you get an API connection error locally, check your internet connection, API keys, firewall, or deployment secrets.
-
-## License
-
-This project is open for learning and experimentation. Add a license file if you want to publish it as an open-source project.
+Built by **[Abhinav](https://github.com/Abhinav-180)** as a portfolio project to demonstrate skills in multi-agent AI systems, LangChain orchestration, LLM integration, and full-stack Python development.

@@ -203,11 +203,6 @@ LLM_MODEL = "meta-llama/llama-3.3-70b-instruct:free"
 | LLM Fallback Strategy | `agents.py` | Tries Mistral AI first, falls back to OpenRouter for zero-cost operation |
 | Streamlit Session State | `app.py` | Tracks pipeline progress and results across re-runs for a seamless UX |
 
----
-
-## 📝 License
-
-This project is for educational and portfolio purposes.
 
 ---
 
